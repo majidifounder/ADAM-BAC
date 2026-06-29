@@ -1,0 +1,517 @@
+Build a complete, single-file (index.html) Baccalauréat Maroc emergency study tracker website. 
+This is for a student in the PC (Sciences Physiques) branch who has 4 days until exams. 
+Everything must be in one HTML file with embedded CSS and JavaScript.
+Use localStorage for all data persistence.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STUDENT DATA
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Previous session grades:
+  - Physics-Chemistry (PC): 2/20   → coefficient 7 (CRITICAL)
+  - Mathematics: 4.5/20            → coefficient 7 (CRITICAL)
+  - English: 2/20                  → coefficient 2 (HIGH)
+  - SVT: 6.5/20                    → coefficient 5 (HIGH)
+  - Philosophy: 11/20              → coefficient 2 (MODERATE)
+
+Exam schedule:
+  - Thursday  → PC (×7) + English (×2)
+  - Friday    → Math (×7) + Philosophy (×2)
+  - Saturday  → SVT (×5)
+
+Total coefficients: 7+2+7+2+5 = 23
+Passing average: 10/20
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+DESIGN SYSTEM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Typography:
+  - Import from Google Fonts: 'Space Grotesk' (headings, weight 500/700) 
+    and 'Inter' (body, weight 400/500)
+  - Base font-size: 15px
+
+Color palette:
+  --bg-page:      #080c18      (very deep navy)
+  --bg-card:      #0f1629      (card background)
+  --bg-card-alt:  #141c35      (slightly lighter card)
+  --border:       rgba(255,255,255,0.07)
+  --border-hover: rgba(255,255,255,0.14)
+  --text-primary: #f0f4ff
+  --text-muted:   #8892a4
+  --text-dim:     #4a5568
+
+  Accent colors:
+  --accent-blue:   #4f9ef8   (primary accent)
+  --accent-green:  #10d4a8   (success / good)
+  --accent-amber:  #f5a623   (warning / moderate)
+  --accent-red:    #ff4757   (danger / critical)
+  --accent-purple: #a78bfa   (special elements)
+  --accent-pink:   #f472b6   (highlights)
+
+Rules:
+  - Dark theme only, no white backgrounds
+  - Glassmorphism cards: background rgba(15,22,41,0.8), 
+    border 0.5px solid var(--border), border-radius 16px
+  - CRITICAL subjects get a subtle red left-border accent (3px solid #ff4757)
+  - Smooth transitions: all 0.2s ease on hover states
+  - Scrollbar styled: thin, dark track, blue thumb
+  - No shadows — use borders for depth
+  - Progress bars: height 6px, border-radius 3px, gradient fill
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTIONS TO BUILD (in order, top to bottom)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+──────────────────────
+SECTION 1 — HERO HEADER
+──────────────────────
+
+Full-width top section with:
+
+a) Top bar with:
+   - Left: Logo text "BAC MISSION 2025" in bold Space Grotesk, 
+     with a small red pulsing dot (CSS animation) labeled "LIVE"
+   - Right: Current date displayed, and a "PANIC MODE" toggle button
+
+b) Centered hero content:
+   - Big bold headline: "MISSION BACCALAURÉAT"
+   - Subline: "PC • Sciences Physiques • Session de Rattrapage"
+   - Below that: a large animated countdown timer
+   
+   Countdown timer:
+   - Target: the coming Thursday at 08:00 AM 
+     (calculate dynamically: find the next Thursday from today's date)
+   - Display 4 blocks side by side: JOURS / HEURES / MINUTES / SECONDES
+   - Each block: big number (48px, Space Grotesk 700) + label below (11px, muted)
+   - Block style: dark card, blue top border accent, no shadow
+   - Update every second with JavaScript setInterval
+   - Also update the <title> tag: "⏱ Xj Xh Xm — BAC MISSION"
+   - When under 24h: numbers turn red and pulse
+   
+c) Below countdown: a horizontal "overall readiness" bar
+   - Label: "Préparation globale"
+   - Calculated as: weighted average of study-hours-logged across all subjects
+     normalized to a max of 30 hours total (so 0 hours = 0%, 30+ hours = 100%)
+   - Color: gradient from red (0%) to amber (50%) to green (100%)
+   - Show percentage text on the right
+
+──────────────────────
+SECTION 2 — EXAM TIMELINE
+──────────────────────
+
+A horizontal scrollable timeline showing 7 days: TODAY through SATURDAY.
+
+Each day = a card with:
+  - Day name (Dimanche, Lundi, etc.)
+  - Date number (large)
+  - Content:
+      Today → "RÉVISIONS INTENSIVES"
+      Tuesday / Wednesday → "RÉVISIONS"
+      Thursday → "🔬 PC + 🌍 English" (red badge: "EXAM")
+      Friday → "📐 Math + 💭 Philo" (red badge: "EXAM")
+      Saturday → "🌱 SVT" (red badge: "EXAM")
+
+  - TODAY's card: highlighted with blue border, slightly lighter bg
+  - EXAM days: red border, "EXAM" badge top-right
+  - Past days: dimmed opacity 0.4
+  - All cards same size (about 120px wide), horizontal scroll on mobile
+
+──────────────────────
+SECTION 3 — SUBJECT PRIORITY DASHBOARD
+──────────────────────
+
+Grid of 5 subject cards (2 columns on desktop, 1 on mobile, 
+with Philosophy and SVT sharing the last row).
+
+For each subject, display a card containing:
+
+  a) Header row:
+     - Left: emoji icon + subject name in bold
+     - Right: coefficient badge (e.g. "×7") in colored pill
+       - ×7 = blue pill, ×5 = amber pill, ×2 = gray pill
+
+  b) Grade row:
+     - "Note actuelle:" label + the grade as "X/20" 
+     - Color the grade: red if < 5, amber if 5–8, green if > 8
+     - Next to it, a small "PRIORITÉ" badge:
+       CRITIQUE (red) / HAUTE (amber) / MODÉRÉE (green)
+
+  c) Priority score:
+     - Formula: score = coefficient × (20 - grade) / 20
+     - Display as "Score d'urgence: X.X" (shown as a decimal)
+     - Small bar showing this score relative to max possible (7×1 = 7)
+
+  d) Study hours section:
+     - "Heures étudiées aujourd'hui: X h X min"
+     - "Total cette session: X h X min"
+     - Three quick-add buttons: [+25min] [+1h] [+2h]
+     - These add to today's count AND total, saved in localStorage
+     - Button style: small, dark outline, blue text
+
+  e) Progress bar:
+     - Label: "Niveau de préparation estimé"
+     - Width starts at: (current_grade / 20 * 100)%
+     - Increases as study hours are logged (each hour adds ~3% capped at 95%)
+     - Show percentage
+
+  f) Quick notes icon (pencil icon) that scrolls to that subject's notes area
+
+  Subjects and their data:
+  
+  1. 🔬 Physique-Chimie (PC)
+     grade: 2, coeff: 7, priority: CRITIQUE
+     left-border: 3px solid #ff4757
+  
+  2. 📐 Mathématiques
+     grade: 4.5, coeff: 7, priority: CRITIQUE
+     left-border: 3px solid #ff4757
+  
+  3. 🌱 SVT
+     grade: 6.5, coeff: 5, priority: HAUTE
+     left-border: 3px solid #f5a623
+  
+  4. 🌍 Anglais
+     grade: 2, coeff: 2, priority: HAUTE
+     left-border: 3px solid #f5a623
+  
+  5. 💭 Philosophie
+     grade: 11, coeff: 2, priority: MODÉRÉE
+     left-border: 3px solid #10d4a8
+
+  Sort order: by priority score (highest first), so PC and Math come first.
+
+──────────────────────
+SECTION 4 — DAILY STUDY PLAN
+──────────────────────
+
+Tab navigation with 4 tabs: [Jour 1 - Aujourd'hui] [Jour 2] [Jour 3] [Jour 4 - Veille]
+Active tab has blue underline, inactive tabs are dimmed.
+Show the correct tab's content below.
+
+Default: Jour 1 is active. 
+Also: today's tab shows a green dot indicator.
+
+Each day tab content is a list of time blocks.
+Each time block is a row with:
+  - [checkbox] (saved in localStorage, key: "plan_dayX_taskY")
+  - Time range label (e.g., "09h00 – 12h00")
+  - Subject badge (color-coded)
+  - Task description
+  - When checked: row gets line-through and dimmed, 
+    a green checkmark replaces the checkbox
+
+Day 1 — Dimanche (Today):
+  ☐ 08h00 – 11h00 | 🔬 PC | Mécanique : Lois de Newton, MRU/MRUV, chute libre
+  ☐ 11h00 – 11h15 | ☕ Pause
+  ☐ 11h15 – 13h00 | 🔬 PC | Électricité : Circuits RC et RL (charge/décharge)
+  ☐ 14h00 – 16h00 | 🔬 PC | Chimie : Acides-bases, pH, titrages
+  ☐ 16h15 – 17h30 | 🌍 Anglais | Grammar: Tenses + Modal verbs + Connectors
+  ☐ 20h00 – 21h30 | 🔬 PC | Ondes mécaniques + Optique (révision rapide)
+  ☐ 21h30 – 22h00 | 📝 Révision | Résumé de la journée — noter les formules clés
+
+Day 2 — Lundi:
+  ☐ 08h00 – 11h00 | 📐 Math | Analyse : Suites (arithmétiques, géométriques, récurrentes)
+  ☐ 11h15 – 13h00 | 📐 Math | Dérivation et étude complète de fonctions
+  ☐ 14h00 – 16h00 | 📐 Math | Intégration : primitives + calcul d'aires
+  ☐ 16h15 – 17h30 | 📐 Math | Probabilités (loi binomiale, dénombrement)
+  ☐ 20h00 – 21h30 | 🌱 SVT | Génétique : ADN, réplication, transcription, traduction
+  ☐ 21h30 – 22h00 | 🔬 PC | Révision rapide formules PC
+
+Day 3 — Mardi:
+  ☐ 08h00 – 10h30 | 🔬 PC | Révision totale PC : exercices types bac
+  ☐ 10h45 – 12h30 | 🔬 PC | Chimie organique : estérification, hydrolyse
+  ☐ 14h00 – 16h30 | 📐 Math | Nombres complexes + Géométrie dans l'espace
+  ☐ 16h30 – 17h30 | 🌍 Anglais | Reading comprehension + Essay writing structure
+  ☐ 20h00 – 21h30 | 🌱 SVT | Immunologie + Neurophysiologie (influx nerveux)
+  ☐ 21h30 – 22h00 | 📝 Bilan | Révision tous sujets — points faibles
+
+Day 4 — Mercredi (Veille des examens):
+  ☐ 08h00 – 09h30 | 🔬 PC | Dernière révision : formules et constantes essentielles
+  ☐ 09h30 – 11h00 | 🔬 PC | 2 exercices complets type bac
+  ☐ 11h15 – 12h30 | 🌍 Anglais | Conseils expression + relecture méthode
+  ☐ 14h00 – 15h30 | 📐 Math | Formules clés Math — tableur de révision
+  ☐ 15h30 – 16h30 | 📐 Math | 1 exercice intégration + 1 exercice probabilités
+  ☐ 17h00 – 18h00 | 🌱 SVT | SVT : géologie + génétique mendélienne
+  ☐ 20h00 – 21h00 | 💭 Philo | Grands thèmes + citations philosophes clés
+  ☐ 21h00 – 21h30 | 😴 Repos | Préparer les affaires, dormir tôt !
+
+At the bottom of each day: show "X / Y tâches complétées" progress bar.
+
+──────────────────────
+SECTION 5 — TOPIC CHECKLISTS
+──────────────────────
+
+Section title: "Chapitres à Maîtriser"
+5 accordion panels, one per subject (expanded by default for PC and Math).
+Click header to collapse/expand. State saved in localStorage.
+Each accordion header shows: subject name + "X/Y chapitres" progress counter.
+
+Inside each accordion: list of checkbox items.
+Checkboxes saved in localStorage key: "topic_SUBJECT_INDEX".
+When an item is checked: strikethrough text, green checkmark, dimmed.
+
+PC — Physique-Chimie (18 items):
+  ☐ Mécanique — Lois de Newton (principe fondamental, 2ème loi)
+  ☐ Mécanique — MRU et MRUV (équations horaires)
+  ☐ Mécanique — Chute libre et mouvement parabolique
+  ☐ Mécanique — Mouvements circulaires et pendule
+  ☐ Électricité — Dipôle RC : charge et décharge
+  ☐ Électricité — Dipôle RL et circuit RLC
+  ☐ Électricité — Oscillations forcées et résonance
+  ☐ Optique — Lentilles convergentes et divergentes
+  ☐ Optique — Réfraction, réflexion, Snell-Descartes
+  ☐ Chimie — Acides et bases, constante Ka, pH
+  ☐ Chimie — Titrages acido-basiques (suivi pH-métrique)
+  ☐ Chimie — Réactions d'oxydo-réduction
+  ☐ Chimie organique — Estérification et hydrolyse
+  ☐ Chimie organique — Identification de groupes fonctionnels
+  ☐ Ondes — Ondes mécaniques progressives
+  ☐ Ondes — Diffraction et interférence
+  ☐ Nucléaire — Radioactivité (α, β, γ), lois de conservation
+  ☐ Nucléaire — Défaut de masse, énergie de liaison
+
+Math (16 items):
+  ☐ Suites — Suites arithmétiques (formules, sommes)
+  ☐ Suites — Suites géométriques (formules, sommes)
+  ☐ Suites — Suites récurrentes (monotonie, convergence)
+  ☐ Dérivation — Dérivée d'une fonction composée
+  ☐ Dérivation — Étude complète d'une fonction (tableau de variations)
+  ☐ Intégration — Calcul de primitives (toutes formules)
+  ☐ Intégration — Calcul d'aires entre courbes
+  ☐ Équations différentielles — y' = ay + b
+  ☐ Probabilités — Dénombrement (arrangements, combinaisons)
+  ☐ Probabilités — Loi binomiale (espérance, variance)
+  ☐ Probabilités — Variables aléatoires continues
+  ☐ Nombres complexes — Formes algébrique/trigonométrique/exponentielle
+  ☐ Nombres complexes — Résolution d'équations
+  ☐ Géométrie — Produit scalaire et vectoriel dans l'espace
+  ☐ Géométrie — Plans et droites (distances, angles)
+  ☐ Statistiques — Médiane, quartiles, écart-type
+
+SVT (12 items):
+  ☐ Génétique — Structure de l'ADN et chromosomes
+  ☐ Génétique — Réplication, transcription, traduction
+  ☐ Génétique — Mutations et maladies génétiques
+  ☐ Génétique — Monohybridisme (lois de Mendel)
+  ☐ Génétique — Dihybridisme et linkage
+  ☐ Immunologie — Réponse immunitaire non spécifique
+  ☐ Immunologie — Réponse humorale et cellulaire
+  ☐ Neurophysiologie — Potentiel de repos et d'action
+  ☐ Neurophysiologie — Synapse et neurotransmetteurs
+  ☐ Géologie — Tectonique des plaques (preuves, mécanismes)
+  ☐ Géologie — Séismes et volcans
+  ☐ Physiologie — Régulation hormonale (exemple de la glycémie)
+
+Anglais (10 items):
+  ☐ Grammar — All tenses review (simple, progressive, perfect)
+  ☐ Grammar — Modal verbs (can, could, must, might, should, would)
+  ☐ Grammar — Conditional sentences (type 0, 1, 2, 3)
+  ☐ Grammar — Passive voice transformation
+  ☐ Grammar — Reported speech
+  ☐ Vocabulary — Environment & ecology
+  ☐ Vocabulary — Technology & media
+  ☐ Vocabulary — Society & social issues
+  ☐ Writing — Essay structure (introduction, body, conclusion)
+  ☐ Reading — Comprehension strategies (skimming, scanning)
+
+Philosophie (10 items):
+  ☐ La liberté — Déterminisme vs liberté
+  ☐ La conscience — Conscience de soi, inconscient (Freud)
+  ☐ La personne — Identité personnelle, autrui
+  ☐ La vérité — Certitude, doute, vérité scientifique
+  ☐ La raison — Rationalisme vs empirisme
+  ☐ La politique — État, droit, justice sociale
+  ☐ L'art — La beauté, l'imitation, l'expression
+  ☐ Le bonheur — Plaisir, devoir, sagesse
+  ☐ Philosophes clés — Descartes, Kant, Sartre, Hegel, Platon
+  ☐ Méthode — Plan de dissertation (thèse / antithèse / synthèse)
+
+──────────────────────
+SECTION 6 — GRADE CALCULATOR
+──────────────────────
+
+Title: "Simulateur de Note Finale"
+Subtitle: "Entrez vos estimations pour le rattrapage"
+
+5 rows, one per subject. Each row:
+  - Subject label + coefficient badge
+  - A range slider (min: 0, max: 20, step: 0.5)
+  - Number input showing current slider value (synced both ways)
+  - Previous grade shown in small text: "(ancienne: X/20)"
+
+Below the sliders, a result card showing:
+
+  a) Weighted average formula displayed:
+     "(PC×7 + Ang×2 + Math×7 + Philo×2 + SVT×5) ÷ 23 = X.XX/20"
+
+  b) Large result number (X.XX/20) 
+     - Color: red if <8, amber if 8–10, green if ≥10
+  
+  c) Pass/Fail indicator:
+     - If ≥10: green badge "✓ ADMIS — Félicitations!"
+     - If 8–9.99: amber badge "⚠ ADMIS sous réserve (jury)"
+     - If <8: red badge "✗ Non admis — Continue !"
+  
+  d) "Points manquants" or "Points d'avance" relative to 10/20
+  
+  e) Per-subject contribution bar: show (grade × coeff) / 23 
+     as small colored segments in a stacked bar, 
+     labeled with each subject
+
+  Default slider values = the previous session grades
+  (PC=2, Math=4.5, English=2, SVT=6.5, Philo=11)
+  Everything recalculates live on slider change.
+
+──────────────────────
+SECTION 7 — POMODORO STUDY TIMER
+──────────────────────
+
+Title: "Minuteur d'Étude"
+
+Layout: centered card with:
+
+  a) Subject selector — 5 buttons (one per subject), click to select.
+     Selected button: filled with that subject's accent color.
+     Buttons: [🔬 PC] [📐 Math] [🌱 SVT] [🌍 Anglais] [💭 Philo]
+
+  b) Mode toggle: [FOCUS 25min] [COURTE PAUSE 5min] [LONGUE PAUSE 15min]
+     Clicking switches the timer duration.
+
+  c) Circular SVG progress ring (200px diameter):
+     - Outer ring: dim gray track
+     - Inner ring: colored arc, animated, depletes clockwise as time passes
+     - Center: large time display "MM:SS" in Space Grotesk 700
+     - Below time: show selected subject name
+     - Ring color = subject's accent color
+
+  d) Controls below the ring: [▶ DÉMARRER] [⏸ PAUSE] [↺ RESET]
+     Button style: large, rounded, border style
+
+  e) Session stats:
+     - "Pomodoros aujourd'hui: X"
+     - "Temps total concentré: Xh Xmin"
+     - When a FOCUS session completes: increment count, add a 🍅 tomato icon 
+       (up to 8 tomatoes shown)
+     - Auto-switch to break timer when focus session ends
+
+  f) Browser notification: when timer ends, change <title> to "⏰ TERMINÉ! — BAC MISSION"
+     Show an alert if Notification API is not supported.
+
+  g) All pomodoro session data saved in localStorage (today's count, total minutes)
+
+──────────────────────
+SECTION 8 — PER-SUBJECT NOTES
+──────────────────────
+
+Title: "Notes Rapides"
+
+5 tabs (same subjects). Each tab has:
+  - A <textarea> placeholder: 
+    "Notez vos formules clés, points importants, et rappels ici..."
+  - Auto-saves to localStorage on every keystroke (key: "notes_SUBJECT")
+  - Shows: "Sauvegardé automatiquement ✓" in green when saved
+  - Word count shown below: "X mots"
+  - A [Effacer] button with confirmation: "Êtes-vous sûr ?"
+  - Textarea style: dark bg, blue border on focus, monospace-ish font, 
+    min-height 200px, resizable
+
+──────────────────────
+SECTION 9 — MOTIVATIONAL FOOTER
+──────────────────────
+
+A section with:
+  a) Rotating motivational quotes (cycle every 8 seconds with fade animation):
+     - "كل دقيقة تذاكر فيها الآن هي درجة أكثر في يوم الامتحان 💪"
+     - "4 jours suffisent. Les champions se font dans les dernières heures."
+     - "Tu n'as pas raté. Tu as une autre chance. Utilise-la."
+     - "Your only competition is who you were yesterday."
+     - "Le Bac, c'est 4 jours de concentration pour une vie de liberté."
+     - "متستسلمش — الجهد ما يخيبش"
+     - "Pain now, results Thursday. Lock in."
+
+  b) Total session stats summary:
+     - "Heures totales étudiées: Xh Xmin"
+     - "Chapitres validés: X / 66"
+     - "Tâches journalières complétées: X / Y"
+
+  c) Copyright line: "BAC MISSION 2025 • Bonne chance ! 🎓"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PANIC MODE (toggle in top bar)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+When the "PANIC MODE" button is clicked (toggle):
+  - Body background shifts to #0d0508 (dark maroon)
+  - All card borders turn red: rgba(255,71,87,0.3)
+  - Countdown numbers pulse red
+  - A top banner appears: 
+    "⚠ PANIC MODE — Concentre-toi sur l'ESSENTIEL"
+  - All accordion sections collapse except PC and Math
+  - The daily plan scrolls to today's tab automatically
+  - Grade calculator sliders reset focus to PC and Math
+  - Toggle button text switches to "DÉSACTIVER PANIC MODE"
+  - State saved in localStorage
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TECHNICAL REQUIREMENTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Single file: index.html with <style> in <head> and <script> before </body>
+
+2. localStorage keys to implement:
+   - "study_hours_TODAY_SUBJECT" (reset daily based on date)
+   - "study_hours_TOTAL_SUBJECT"
+   - "plan_day1_task0" through plan_day4_taskX (boolean)
+   - "topic_pc_0" through topic_philo_9 (boolean)
+   - "notes_pc", "notes_math", "notes_svt", "notes_english", "notes_philo"
+   - "pomodoro_count_today", "pomodoro_total_minutes"
+   - "accordion_state_SUBJECT" (expanded/collapsed)
+   - "panic_mode" (boolean)
+   - "last_visit_date" (to detect day change and reset daily counters)
+
+3. On page load:
+   - Check if date has changed since last_visit_date
+   - If yes: reset all "TODAY" counters, mark new day started
+   - Restore all checkbox states, notes, accordion states from localStorage
+   - Restore panic mode state
+   - Start countdown timer immediately
+
+4. Responsive:
+   - Desktop (>768px): 2-column grid for subject cards, 
+     timeline horizontal scroll
+   - Mobile (<768px): 1-column, all stacked, 
+     larger touch targets (min 44px height for buttons)
+
+5. Performance:
+   - No external JS libraries (pure vanilla JS)
+   - Only external resource: Google Fonts (one @import)
+   - Countdown uses setInterval(fn, 1000)
+   - Notes auto-save: debounced 500ms after typing stops
+
+6. Accessibility basics:
+   - All interactive elements keyboard-accessible
+   - Focus rings visible (outline: 2px solid var(--accent-blue))
+   - ARIA labels on icon-only buttons
+
+7. Smooth scroll:
+   - html { scroll-behavior: smooth }
+   - Subject card's "notes" icon scrolls to that subject's tab in section 8
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ADDITIONAL POLISH
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+- When a checkbox is checked anywhere: brief CSS scale animation (0.95→1.05→1)
+- Study hours "+1h" button: brief green flash on the total display
+- Grade calculator: numbers count up smoothly (200ms animation) on slider change
+- Pomodoro ring: SVG stroke-dashoffset animated with CSS transition
+- Accordion open/close: max-height transition (0 → auto via CSS trick)
+- Scrollbar: ::-webkit-scrollbar { width: 6px } with dark track, blue thumb
+- Section separators: a subtle 1px horizontal line with rgba(255,255,255,0.05)
+- Each section has a top label like "01 — COMPTE À REBOURS" in small 
+  uppercase spaced letters (color: var(--text-dim)) above the section title
+
+Build the complete, fully functional index.html now. 
+Do not use any placeholder comments — implement every feature fully. 
+The file should work by simply opening it in a browser with no server needed.
