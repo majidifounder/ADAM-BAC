@@ -122,9 +122,9 @@ export default function PomodoroSection() {
           </div>
         </div>
         <div className="pomo-controls">
-          <button type="button" className="pomo-btn" onClick={start}>▶ DÉMARRER</button>
-          <button type="button" className="pomo-btn" onClick={pause}>⏸ PAUSE</button>
-          <button type="button" className="pomo-btn" onClick={() => reset()}>↺ RESET</button>
+          <button type="button" className="btn pomo-btn" onClick={start}>▶ Démarrer</button>
+          <button type="button" className="btn pomo-btn" onClick={pause}>⏸ Pause</button>
+          <button type="button" className="btn pomo-btn" onClick={() => reset()}>↺ Reset</button>
         </div>
         <div className="pomo-stats">
           Pomodoros aujourd&apos;hui: <strong>{count}</strong>

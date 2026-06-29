@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useApp } from './context/AppContext'
 import { SECTIONS } from './data/constants'
 import { getCountdown } from './utils/helpers'
@@ -24,29 +25,25 @@ const SECTION_MAP = {
 }
 
 function TopBar() {
-  const { panic, togglePanic, activeSection, setActiveSection } = useApp()
+  const { panic, togglePanic } = useApp()
   const { days, hrs, mins, secs, urgent } = getCountdown()
 
   return (
     <header className="top-bar">
-      <span className={`sticky-countdown${urgent ? ' urgent' : ''}`}>
-        ⏱ {days}j {hrs}h {mins}m {secs}s
+      <div className="top-bar-brand">
+        <span className="live-dot" aria-hidden="true" />
+        <span className="top-bar-title">BAC 2025</span>
+      </div>
+      <span className={`sticky-countdown${urgent ? ' urgent' : ''}`} aria-live="polite">
+        {days}j {hrs}h {mins}m {secs}s
       </span>
-      <nav className="nav-jump" aria-label="Sections">
-        {SECTIONS.map((s) => (
-          <button
-            key={s.id}
-            type="button"
-            className={`nav-btn${activeSection === s.id ? ' active' : ''}`}
-            onClick={() => setActiveSection(s.id)}
-            aria-current={activeSection === s.id ? 'page' : undefined}
-          >
-            {s.label}
-          </button>
-        ))}
-      </nav>
-      <button type="button" className="btn btn-panic btn-sm" onClick={togglePanic}>
-        {panic ? 'OFF' : 'PANIC'}
+      <button
+        type="button"
+        className={`btn btn-panic btn-sm top-panic${panic ? ' active' : ''}`}
+        onClick={togglePanic}
+        aria-pressed={panic}
+      >
+        {panic ? 'PANIC ON' : 'PANIC'}
       </button>
     </header>
   )
@@ -64,9 +61,10 @@ function BottomNav() {
           className={`bottom-nav-btn${activeSection === s.id ? ' active' : ''}`}
           onClick={() => setActiveSection(s.id)}
           aria-current={activeSection === s.id ? 'page' : undefined}
+          aria-label={s.title}
         >
-          <span className="bottom-nav-icon">{s.icon}</span>
-          <span className="bottom-nav-label">{s.title}</span>
+          <span className="bottom-nav-icon" aria-hidden="true">{s.icon}</span>
+          <span className="bottom-nav-label">{s.short}</span>
         </button>
       ))}
     </nav>
@@ -77,11 +75,16 @@ export default function App() {
   const { panic, activeSection } = useApp()
   const ActiveComponent = SECTION_MAP[activeSection] || HeroSection
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' })
+    document.getElementById('root')?.scrollTo?.({ top: 0, behavior: 'instant' })
+  }, [activeSection])
+
   return (
     <div className={`app${panic ? ' panic' : ''}`}>
       {panic && (
         <div className="panic-banner" role="alert">
-          ⚠ PANIC MODE — Concentre-toi sur l&apos;ESSENTIEL
+          PANIC MODE — Concentre-toi sur PC et Maths
         </div>
       )}
       <div className="wrap">

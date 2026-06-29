@@ -141,13 +141,13 @@ export const QUOTES = [
 ]
 
 export const SECTIONS = [
-  { id: 1, label: '01', title: 'Compte à rebours', icon: '⏱' },
-  { id: 2, label: '02', title: 'Calendrier', icon: '📅' },
-  { id: 3, label: '03', title: 'Priorités', icon: '📊' },
-  { id: 4, label: '04', title: 'Planning', icon: '📋' },
-  { id: 5, label: '05', title: 'Chapitres', icon: '📚' },
-  { id: 6, label: '06', title: 'Simulation', icon: '🎯' },
-  { id: 7, label: '07', title: 'Focus', icon: '⏲' },
-  { id: 8, label: '08', title: 'Notes', icon: '✏️' },
-  { id: 9, label: '09', title: 'Motivation', icon: '💪' },
+  { id: 1, label: '01', title: 'Compte à rebours', short: 'Accueil', icon: '⏱' },
+  { id: 2, label: '02', title: 'Calendrier', short: 'Dates', icon: '📅' },
+  { id: 3, label: '03', title: 'Priorités', short: 'Matières', icon: '📊' },
+  { id: 4, label: '04', title: 'Planning', short: 'Plan', icon: '📋' },
+  { id: 5, label: '05', title: 'Chapitres', short: 'Sujets', icon: '📚' },
+  { id: 6, label: '06', title: 'Simulation', short: 'Notes', icon: '🎯' },
+  { id: 7, label: '07', title: 'Focus', short: 'Focus', icon: '⏲' },
+  { id: 8, label: '08', title: 'Notes', short: 'Carnet', icon: '✏️' },
+  { id: 9, label: '09', title: 'Motivation', short: 'Boost', icon: '💪' },
 ]

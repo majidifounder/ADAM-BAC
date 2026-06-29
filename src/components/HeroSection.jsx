@@ -6,7 +6,7 @@ import {
 } from '../utils/helpers'
 
 export default function HeroSection() {
-  const { tick, panic, togglePanic, getStudyMins, isTopicDone } = useApp()
+  const { tick, getStudyMins, isTopicDone } = useApp()
   const { days, hrs, mins, secs, urgent } = getCountdown()
   const readiness = Math.min(100, Math.round(weightedStudyHours(getStudyMins) / 30 * 100))
   const topics = countAllTopics((subId, idx) => isTopicDone(subId, idx))
@@ -22,19 +22,7 @@ export default function HeroSection() {
 
   return (
     <SectionShell id={1} label="01 — COMPTE À REBOURS" title="MISSION BACCALAURÉAT">
-      <div className="topbar">
-        <div className="logo-text">
-          <span className="live-dot" />
-          BAC MISSION 2025
-          <span className="live-tag">LIVE</span>
-        </div>
-        <div className="topbar-right">
-          <span>{dateStr}</span>
-          <button type="button" className="btn btn-panic" onClick={togglePanic}>
-            {panic ? 'DÉSACTIVER PANIC MODE' : 'PANIC MODE'}
-          </button>
-        </div>
-      </div>
+      <div className="hero-date">{dateStr}</div>
 
       <p className="hero-sub">PC • Sciences Physiques • Session de Rattrapage</p>
 
